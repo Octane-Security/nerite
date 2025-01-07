@@ -460,7 +460,7 @@ contract TestDeployer is MetadataDeployment {
         contracts.troveManager = new TroveManagerTester{salt: SALT}(contracts.addressesRegistry);
         contracts.troveNFT = new TroveNFT{salt: SALT}(contracts.addressesRegistry);
         contracts.stabilityPool = new StabilityPool{salt: SALT}(contracts.addressesRegistry);
-        contracts.activePool = new ActivePool{salt: SALT}(contracts.addressesRegistry);
+        contracts.activePool = new ActivePool{salt: SALT}(contracts.addressesRegistry, address(0), address(0));
         contracts.pools.defaultPool = new DefaultPool{salt: SALT}(contracts.addressesRegistry);
         contracts.pools.gasPool = new GasPool{salt: SALT}(contracts.addressesRegistry);
         contracts.pools.collSurplusPool = new CollSurplusPool{salt: SALT}(contracts.addressesRegistry);
@@ -698,7 +698,7 @@ contract TestDeployer is MetadataDeployment {
         contracts.troveManager = new TroveManager{salt: SALT}(contracts.addressesRegistry);
         contracts.troveNFT = new TroveNFT{salt: SALT}(contracts.addressesRegistry);
         contracts.stabilityPool = new StabilityPool{salt: SALT}(contracts.addressesRegistry);
-        contracts.activePool = new ActivePool{salt: SALT}(contracts.addressesRegistry);
+        contracts.activePool = new ActivePool{salt: SALT}(contracts.addressesRegistry, address(0), address(0));
         contracts.defaultPool = new DefaultPool{salt: SALT}(contracts.addressesRegistry);
         contracts.gasPool = new GasPool{salt: SALT}(contracts.addressesRegistry);
         contracts.collSurplusPool = new CollSurplusPool{salt: SALT}(contracts.addressesRegistry);

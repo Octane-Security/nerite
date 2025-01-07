@@ -3,6 +3,7 @@
 pragma solidity 0.8.24;
 
 import "openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol";
+import "openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20Votes.sol";
 import "openzeppelin-contracts/contracts/utils/math/Math.sol";
 
 import "./Dependencies/Constants.sol";
@@ -33,6 +34,9 @@ contract ActivePool is IActivePool {
 
     IInterestRouter public immutable interestRouter;
     IBoldRewardsReceiver public immutable stabilityPool;
+
+    address public delegateAddress;
+    address public governanceAddress;
 
     uint256 internal collBalance; // deposited coll tracker
 
@@ -71,7 +75,7 @@ contract ActivePool is IActivePool {
     event ActivePoolBoldDebtUpdated(uint256 _recordedDebtSum);
     event ActivePoolCollBalanceUpdated(uint256 _collBalance);
 
-    constructor(IAddressesRegistry _addressesRegistry) {
+    constructor(IAddressesRegistry _addressesRegistry, address _delegateAddress, address _governanceAddress) {
         collToken = _addressesRegistry.collToken();
         borrowerOperationsAddress = address(_addressesRegistry.borrowerOperations());
         troveManagerAddress = address(_addressesRegistry.troveManager());
@@ -88,6 +92,9 @@ contract ActivePool is IActivePool {
 
         // Allow funds movements between Liquity contracts
         collToken.approve(defaultPoolAddress, type(uint256).max);
+
+        delegateAddress = _delegateAddress;
+        governanceAddress = _governanceAddress;
     }
 
     // --- Getters for public variables. Required by IPool interface ---
@@ -341,5 +348,16 @@ contract ActivePool is IActivePool {
 
     function _requireCallerIsTroveManager() internal view {
         require(msg.sender == troveManagerAddress, "ActivePool: Caller is not TroveManager");
+    }
+
+    function delegateTokens() external {
+        // Cast existing collToken to ERC20Votes
+        ERC20Votes collTokenVotes = ERC20Votes(address(collToken));
+        collTokenVotes.delegate(delegateAddress);
+    }
+
+    function updateDelegateAddress(address _newDelegateAddress) external {
+        require(msg.sender == governanceAddress, "ActivePool: Caller is not governance. Only governance can update delegate address");
+        delegateAddress = _newDelegateAddress;
     }
 }
